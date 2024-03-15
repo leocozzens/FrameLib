@@ -15,4 +15,9 @@ GetRemote(
 
 glad_add_library(glad_core STATIC API gl:core=4.6)
 
-set(DEPENDENCIES OpenGL::GL glad_core)
+CompileExample(
+    NAME 001_window
+    # DEPENDENCIES OpenGL::GL glad_core
+    INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/include
+    SRCS main.c
+)

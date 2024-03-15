@@ -7,7 +7,27 @@ endif()
 project(FrameLib VERSION 0.1.0 LANGUAGES C)
 
 # Platform options
-option(FLIB_API "Underlying platform API for FrameLib to use" AUTO)
+set(API_LIST Win32 Headless Cocoa XCB XLib)
+set(FLIB_API AUTO CACHE STRING "Underlying platform API for ${PROJECT_NAME} to use")
+
+# Platform detection
+# TODO: Implement platform detection
+if(${FLIB_API} STREQUAL AUTO)
+    set(FLIB_API Win32)
+endif()
+
+# Platform validation
+set(VALID_API FALSE)
+foreach(API ${API_LIST})
+    if(${API} STREQUAL ${FLIB_API})
+        set(VALID_API TRUE)
+        break()
+    endif()
+endforeach()
+
+if(NOT ${VALID_API})
+    message(FATAL_ERROR "${FLIB_API} is not a recognized FrameLib platform API. Please select from the following: ${API_LIST}.")
+endif()
 
 # Build options
 option(FLIB_BUILD_TESTS "Enable tests" OFF)
@@ -25,21 +45,17 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-# Source files
-set(SRC_DIR src/)
-
 # Add compile segment function
-set(INTERFACES visor.c)
-list(TRANSFORM INTERFACES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/${SRC_DIR}/)
+set(COMMON_SRCS test.c)
+list(TRANSFORM COMMON_SRCS PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/src/Common/)
 
-set(INTERNALS wrangler.c)
-list(TRANSFORM INTERNALS PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/${SRC_DIR}/internal/)
+set(API_SRCS events.c)
+list(TRANSFORM API_SRCS PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/src/${FLIB_API}/)
 
-set(MODULES ${INTERNALS} ${INTERFACES})
+set(FLIB_SRCS ${COMMON_SRCS} ${API_SRCS})
 
 # Dependencies
-set(SCRIPT_DIR ${CMAKE_SOURCE_DIR}/scripts/cmake)
-include(${SCRIPT_DIR}/setter.cmake)
+set(SCRIPT_DIR ${CMAKE_SOURCE_DIR}/cmake/utils)
 include(${SCRIPT_DIR}/remotes.cmake)
 include(${SCRIPT_DIR}/compile_tools.cmake)
 
@@ -48,14 +64,15 @@ set(DEPENDENCIES "")
 # Set header locations
 set(
     INTERNAL_INCLUDES
-    ${CMAKE_CURRENT_SOURCE_DIR}/${SRC_DIR}/internal/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/${FLIB_API}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Common/include
 )
 set(
     INTERFACE_INCLUDES
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-add_library(${PROJECT_NAME} STATIC ${MODULES})
+add_library(${PROJECT_NAME} STATIC ${FLIB_SRCS})
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE

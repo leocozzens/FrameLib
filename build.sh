@@ -23,10 +23,10 @@ if [ "$1" == "$dbg" ] || [ "$2" == "$dbg" ] || [ "$3" == "$dbg" ] || [ "$4" == "
     options+=" -DCMAKE_BUILD_TYPE=Debug"
 fi
 if [ "$1" == "$tst" ] || [ "$2" == "$tst" ] || [ "$3" == "$tst" ] || [ "$4" == "$tst" ]; then
-    options+=" -DVG_VISOR_BUILD_TESTS=ON"
+    options+=" -DFLIB_BUILD_TESTS=ON"
 fi
 if [ "$1" == "$ex" ] || [ "$2" == "$ex" ] || [ "$3" == "$ex" ] || [ "$4" == "$ex" ]; then
-    options+=" -DVG_VISOR_BUILD_EXAMPLES=ON"
+    options+=" -DFLIB_BUILD_EXAMPLES=ON"
 fi
 
 cmake . -B $dir -G "$target"$options
