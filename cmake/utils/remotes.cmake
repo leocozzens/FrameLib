@@ -1,34 +1,32 @@
-cmake_minimum_required(VERSION 3.27.9)
-
-function(GetRemoteURL)
-    cmake_parse_arguments(REMOTE "" "NAME;VERSION;URL;PARENT_DIR" "" ${ARGN})
+function(GetRemote)
+    cmake_parse_arguments(REMOTE "" "NAME;VERSION;PARENT_DIR;REPO;TAG;CMAKE_DIR" "" ${ARGN})
 
     include(FetchContent)
     set(REMOTE_DESTINATION ${REMOTE_PARENT_DIR}/${REMOTE_NAME})
+
+    set(REMOTE_NAME extern_${REMOTE_NAME})
+    if(REMOTE_CMAKE_DIR)
     FetchContent_Declare(
         ${REMOTE_NAME}
-        URL                 ${REMOTE_URL}
-        FIND_PACKAGE_ARGS   ${REMOTE_VERSION}
         SOURCE_DIR          ${REMOTE_DESTINATION}
+        SOURCE_SUBDIR       ${REMOTE_CMAKE_DIR}
+        GIT_REPOSITORY      ${REMOTE_REPO}
+        GIT_TAG             ${REMOTE_TAG}
+        GIT_SHALLOW		    TRUE
+        FIND_PACKAGE_ARGS   ${REMOTE_VERSION}
     )
-    FetchContent_MakeAvailable(${REMOTE_NAME})
-
-    set("${REMOTE_NAME}_LOCATION" ${REMOTE_DESTINATION} PARENT_SCOPE)
-endfunction()
-
-function(GetRemoteTag)
-    cmake_parse_arguments(REMOTE "" "NAME;PARENT_DIR;REPO;TAG" "" ${ARGN})
-
-    include(FetchContent)
-    set(REMOTE_DESTINATION ${REMOTE_PARENT_DIR}/${REMOTE_NAME})
+    else()
     FetchContent_Declare(
         ${REMOTE_NAME}
         SOURCE_DIR          ${REMOTE_DESTINATION}
         GIT_REPOSITORY      ${REMOTE_REPO}
         GIT_TAG             ${REMOTE_TAG}
+        GIT_SHALLOW		    TRUE
+        FIND_PACKAGE_ARGS   ${REMOTE_VERSION}
     )
-    FetchContent_MakeAvailable(${REMOTE_NAME})
+    endif()
 
+    FetchContent_MakeAvailable(${REMOTE_NAME})
     set("${REMOTE_NAME}_LOCATION" ${REMOTE_DESTINATION} PARENT_SCOPE)
 endfunction()
 

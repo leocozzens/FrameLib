@@ -6,7 +6,6 @@
 // #include <test.h>
 // Local test headers
 #include <test_errors.h>
-#include <example.h>
 
 #define STRINGIZE(_x)                   #_x
 #define CHECK_AND_RUN(_target, _test)   if(string_compare(_target, STRINGIZE(_test))) RUN_TEST(_test)
@@ -38,9 +37,8 @@ int main(int argc, char **argv) {
         return UNITY_END();
     }
     for(int i = 1; i < argc; i++) {
-        CHECK_AND_RUN(argv[i], testExample);
-        else CHECK_AND_RUN(argv[i], testExample1);
-        else RUN_TEST(unknownTest);
+        // CHECK_AND_RUN(argv[i], testArrayAppend); // Change to X macro
+        // else RUN_TEST(unknownTest);
     }
     return UNITY_END();
 }
