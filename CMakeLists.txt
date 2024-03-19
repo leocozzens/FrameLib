@@ -45,13 +45,11 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-# Add compile segment function
-set(COMMON_SRCS test.c)
+# List sources
+set(COMMON_SRCS "")
 list(TRANSFORM COMMON_SRCS PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/src/Common/)
 
-set(API_SRCS events.c)
-list(TRANSFORM API_SRCS PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/src/${FLIB_API}/)
-
+file(GLOB_RECURSE API_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/${FLIB_API}/*.c)
 set(FLIB_SRCS ${COMMON_SRCS} ${API_SRCS})
 
 # Dependencies

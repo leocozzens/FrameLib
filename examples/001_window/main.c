@@ -1,6 +1,6 @@
 #include <FLIB/frame.h>
 
 int main(int argc, char **argv) {
-    event_func();
+    window_create(WINDOW_SPEC_INITIALIZER);
     return 0;
 }
